@@ -7,8 +7,9 @@ exports.run = function (app, server) {
     var io = IO(server);
 
     io.on('connection', function (socket) {
-
-        var roomId = socket.request.headers["roomId"] // 房间
+        clientType = socket.request.headers["user-agent"];
+        console.log(clientType);
+        var roomId =  socket.request.headers["roomid"]; // 房间
         var currentUser = '';  //当前用户
 
         //获取roomId
@@ -46,8 +47,13 @@ exports.run = function (app, server) {
                     console.log(error);
                     return false;
                 }
-
-                io.to(roomId).emit('sys', user + '进入了房间');
+                var result = {
+                    user: "系统",
+                    message: user+"进入了房间",
+                    style: null
+                }
+                
+                io.to(roomId).emit('message', result);
                 io.to(roomId).emit('users', res);
                 console.log(user + 'join home:' + roomId);
             });
@@ -64,10 +70,18 @@ exports.run = function (app, server) {
                     console.log(error);
                     return false;
                 }
+                
+                if(typeof user == 'undefined') return false;
+
                 if (user.length) {
                     db.removeUser(roomId, user);
                     socket.leave(roomId);
-                    io.to(roomId).emit('sys', user + '退出了房间');
+                    var result = {
+                        user: "system",
+                        message: user+"退出了房间",
+                        style: null
+                    }
+                    io.to(roomId).emit('message', result);
                     io.to(roomId).emit('users', res);
                     console.log(user + 'leave home:' + roomId);
                 }
@@ -99,7 +113,7 @@ exports.run = function (app, server) {
                     return false;
                 }
                 var result = {
-                    user: "系统",
+                    user: "system",
                     message : data.user + "送" + data.gift.name + "：" + data.num,
                     style: null
                 }
@@ -118,7 +132,7 @@ exports.run = function (app, server) {
                     return false;
                 }
                 var result = {
-                    user: "系统",
+                    user: "system",
                     message: data,
                     style: null
                 }
