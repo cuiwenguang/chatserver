@@ -38,6 +38,10 @@ router.get('/api/room/sort', function (req, res) {
 			 } 
 		  });
 	  });
+	  if(num==0){
+		  res.send('[]');
+	  }
+	  
   });
 });
 
