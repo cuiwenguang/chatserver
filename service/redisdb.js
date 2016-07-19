@@ -50,6 +50,9 @@ exports.removeRoom = function(room) {
     });
 }
 
-exports.getUser = function(room,user,cb) {
-    client.hget(room,user,cb);
+exports.getAllRomm = function(cb) {
+    client.keys('*', cb);
+}
+exports.getUserCount = function(roomId,cb) {
+    client.hlen(roomId, cb);
 }
